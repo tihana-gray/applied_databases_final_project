@@ -17,17 +17,13 @@ try:
 # - https://www.w3schools.com/python/python_mysql_getstarted.asp
 # - https://www.geeksforgeeks.org/python/how-to-install-mysql-connector-package-in-python/
 
-# Running a simple query to test the connection
-    query = "SELECT * FROM attendee"
+while True:
 
-    with conn:
-        cursor = conn.cursor()  
-        cursor.execute(query)
+        print("1 - View Speakers & Sessions")
+        print("2 - Exit")
 
-        subjects = cursor.fetchall()
+        choice = input("Choice: ")
 
-        for s in subjects:
-            print(s)  
-# Prevents crashing the program and prints any errors that occur during the connection or query execution
-except Exception as e:
-    print("Error:", e)
+        if choice == "1":
+
+            name = input("Enter speaker name: ")
