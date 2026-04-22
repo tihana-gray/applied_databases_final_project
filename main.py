@@ -17,7 +17,7 @@ try:
 # - https://www.w3schools.com/python/python_mysql_getstarted.asp
 # - https://www.geeksforgeeks.org/python/how-to-install-mysql-connector-package-in-python/
 
-while True:
+    while True:
 
         print("\n1 - View Speakers & Sessions")
         print("2 - Exit")
@@ -34,8 +34,8 @@ while True:
         else:
             print("Invalid choice.")
             
-        except Exception as e:
-            print("Error:", e)
+except Exception as e:
+    print("Error:", e)
            
             
 # 📚 References: 
@@ -46,3 +46,12 @@ while True:
 # - https://stackoverflow.com/questions/17166074/most-efficient-way-of-making-an-if-elif-elif-else-statement-when-the-else-is-don
 # - https://www.geeksforgeeks.org/python/difference-between-except-and-except-exception-as-e/
 # - https://stackoverflow.com/questions/18982610/difference-between-except-and-except-exception-as-e
+
+# Function
+def view_speakers(conn):
+
+    name = input("Enter speaker name: ")
+
+    query = "SELECT * FROM speaker WHERE speakerName LIKE %s"
+
+   
