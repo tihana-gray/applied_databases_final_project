@@ -25,8 +25,7 @@ try:
         choice = input("Choice: ")
 
         if choice == "1":
-
-            name = input("Enter speaker name: ")
+            view_speakers(conn)
             
         elif choice == "2":
             break
@@ -47,6 +46,7 @@ except Exception as e:
 # https://www.geeksforgeeks.org/python/difference-between-except-and-except-exception-as-e/
 # https://stackoverflow.com/questions/18982610/difference-between-except-and-except-exception-as-e
 
+
 # Function
 def view_speakers(conn):
 
@@ -54,20 +54,20 @@ def view_speakers(conn):
 
     query = "SELECT * FROM speaker WHERE speakerName LIKE %s"
 
-try:
-    cursor = conn.cursor()
-    cursor.execute(query, ("%" + name + "%",))
-    results = cursor.fetchall()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query, ("%" + name + "%",))
+        results = cursor.fetchall()
 
-    for row in results:
-        print(row)
+        for row in results:
+            print(row)
 
-except Exception as e:
-    print("Error:", e)
-    
-# 📚 References:
-# https://www.w3schools.com/sql/sql_like.asp
-# https://stackoverflow.com/questions/5266430/how-to-see-the-real-sql-query-in-python-cursor-execute-using-pyodbc-and-ms-acces
-# https://www.w3schools.com/python/python_for_loops.asp
-# https://stackoverflow.com/questions/17861152/cursor-fetchall-vs-listcursor-in-python
-# https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
+    except Exception as e:
+        print("Error:", e)
+
+        # 📚 References:
+            # https://www.w3schools.com/sql/sql_like.asp
+            # https://stackoverflow.com/questions/5266430/how-to-see-the-real-sql-query-in-python-cursor-execute-using-pyodbc-and-ms-acces
+            # https://www.w3schools.com/python/python_for_loops.asp
+            # https://stackoverflow.com/questions/17861152/cursor-fetchall-vs-listcursor-in-python
+            # https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
