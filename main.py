@@ -18,7 +18,9 @@ WHERE session.speakerName LIKE %s
         results = cursor.fetchall()
 
         for row in results:
-            print(row)
+            print("\nSpeaker:", row["speakerName"])
+            print("Session:", row["sessionTitle"])
+            print("Room:", row["roomName"])
 
     except Exception as e:
         print("Error:", e)
