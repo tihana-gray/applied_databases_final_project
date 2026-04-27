@@ -5,7 +5,12 @@ def view_speakers(conn):
 
     name = input("Enter speaker name: ")
 
-    query = "SELECT * FROM session WHERE speakerName LIKE %s"
+    query = """
+SELECT session.speakerName, session.sessionTitle, room.roomName
+FROM session
+JOIN room ON session.roomID = room.roomID
+WHERE session.speakerName LIKE %s
+"""
 
     try:
         cursor = conn.cursor()
