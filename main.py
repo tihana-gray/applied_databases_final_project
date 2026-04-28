@@ -38,7 +38,12 @@ def view_attendees_by_company(conn):
 
     company = input("Enter company name: ")
 
-    query = "SELECT * FROM attendee WHERE companyName LIKE %s"
+    query = """
+SELECT attendee.attendeeName, company.companyName
+FROM attendee
+JOIN company ON attendee.attendeeCompanyID = company.companyID
+WHERE company.companyName LIKE %s
+"""
 
     try:
         cursor = conn.cursor()
@@ -89,7 +94,7 @@ try:
             view_speakers(conn)
 
         elif choice == "2":
-            print("This option is not available yet")
+            view_attendees_by_company(conn)
 
         elif choice == "3":
             print("This option is not available yet")
