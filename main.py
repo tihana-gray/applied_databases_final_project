@@ -32,6 +32,27 @@ WHERE session.speakerName LIKE %s
             # https://stackoverflow.com/questions/17861152/cursor-fetchall-vs-listcursor-in-python
             # https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
 
+
+# Function for option 2: View Attendees by Company
+def view_attendees_by_company(conn):
+
+    company = input("Enter company name: ")
+
+    query = "SELECT * FROM attendee WHERE companyName LIKE %s"
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query, ("%" + company + "%",))
+        results = cursor.fetchall()
+
+        for row in results:
+            print("\nName:", row["attendeeName"])
+            print("Company:", row["companyName"])
+
+    except Exception as e:
+        print("Error:", e)
+        
+
 try:
     conn = pymysql.connect(
         host="localhost",
