@@ -39,10 +39,12 @@ def view_attendees_by_company(conn):
     company_id = input("Enter company ID: ")
 
     query = """
-SELECT attendee.attendeeName, company.companyName
+SELECT attendee.attendeeName, attendee.attendeeDOB,
+session.sessionTitle, session.speakerName,
+room.roomName
 FROM attendee
 JOIN company ON attendee.attendeeCompanyID = company.companyID
-WHERE company.companyID LIKE %s
+WHERE company.companyID = %s
 """
 
     try:
