@@ -36,18 +36,18 @@ WHERE session.speakerName LIKE %s
 # Function for option 2: View Attendees by Company
 def view_attendees_by_company(conn):
 
-    company = input("Enter company name: ")
+    company_id = input("Enter company ID: ")
 
     query = """
 SELECT attendee.attendeeName, company.companyName
 FROM attendee
 JOIN company ON attendee.attendeeCompanyID = company.companyID
-WHERE company.companyName LIKE %s
+WHERE company.companyID LIKE %s
 """
 
     try:
         cursor = conn.cursor()
-        cursor.execute(query, ("%" + company + "%",))
+        cursor.execute(query, (company_id,))
         results = cursor.fetchall()
 
         for row in results:
@@ -56,7 +56,10 @@ WHERE company.companyName LIKE %s
 
     except Exception as e:
         print("Error:", e)
-        
+
+
+# Function for option 3: Add New Attendee  
+
 
 try:
     conn = pymysql.connect(
