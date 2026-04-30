@@ -36,7 +36,20 @@ WHERE session.speakerName LIKE %s
 # Function for option 2: View Attendees by Company
 def view_attendees_by_company(conn):
 
-    company_id = input("Enter company ID: ")
+    while True:
+        company_id = input("Enter Company ID: ")
+
+        try:
+            company_id = int(company_id)
+
+            if company_id > 0:
+                break
+            else:
+                print("Invalid input. Please enter a number greater than 0.")
+
+        except:
+            print("Invalid input. Please enter a valid number.")
+
 
     query = """
 SELECT attendee.attendeeName, attendee.attendeeDOB,
@@ -55,6 +68,8 @@ WHERE company.companyID = %s
         cursor.execute(query, (company_id,))
         results = cursor.fetchall()
 
+        print("\nCompany ID:", company_id)
+        
         for row in results:
             print("\nName:", row["attendeeName"])
             print("DOB:", row["attendeeDOB"])
