@@ -57,7 +57,10 @@ WHERE company.companyID = %s
 
         for row in results:
             print("\nName:", row["attendeeName"])
-            print("Company:", row["companyName"])
+            print("DOB:", row["attendeeDOB"])
+            print("Session:", row["sessionTitle"])
+            print("Speaker:", row["speakerName"])
+            print("Room:", row["roomName"])
 
     except Exception as e:
         print("Error:", e)
