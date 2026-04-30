@@ -44,6 +44,9 @@ session.sessionTitle, session.speakerName,
 room.roomName
 FROM attendee
 JOIN company ON attendee.attendeeCompanyID = company.companyID
+JOIN registration ON attendee.attendeeID = registration.attendeeID
+JOIN session ON registration.sessionID = session.sessionID
+JOIN room ON session.roomID = room.roomID
 WHERE company.companyID = %s
 """
 
