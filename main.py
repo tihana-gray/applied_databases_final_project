@@ -50,7 +50,6 @@ def view_attendees_by_company(conn):
         except:
             print("Invalid input. Please enter a valid number.")
 
-
     query = """
 SELECT attendee.attendeeName, attendee.attendeeDOB,
 session.sessionTitle, session.speakerName,
@@ -88,8 +87,24 @@ WHERE company.companyID = %s
 def add_attendee(conn):
 
     attendee_id = input("Enter Attendee ID: ")
+    
+    # Checking for duplicates
+    check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+    cursor.execute(check_query, (attendee_id,))
+    result = cursor.fetchone()
+    
+    if result:
+        print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
+        return
+    
     name = input("Enter Attendee Name: ")
     dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    gender = input("Enter Gender (Male/Female): ")
+
+# 📚 References:
+# https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
+# https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
+# https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
 
 
 try:
