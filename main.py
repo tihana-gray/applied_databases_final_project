@@ -85,6 +85,11 @@ WHERE company.companyID = %s
 
 
 # Function for option 3: Add New Attendee  
+def add_attendee(conn):
+
+    attendee_id = input("Enter Attendee ID: ")
+    name = input("Enter Attendee Name: ")
+    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
 
 
 try:
