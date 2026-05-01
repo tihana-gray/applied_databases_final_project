@@ -54,7 +54,7 @@ def view_attendees_by_company(conn):
     query = """
 SELECT attendee.attendeeName, attendee.attendeeDOB,
 session.sessionTitle, session.speakerName,
-room.roomName
+session.sessionDate, room.roomName
 FROM attendee
 JOIN company ON attendee.attendeeCompanyID = company.companyID
 JOIN registration ON attendee.attendeeID = registration.attendeeID
@@ -71,11 +71,14 @@ WHERE company.companyID = %s
         print("\nCompany ID:", company_id)
         
         for row in results:
-            print("\nName:", row["attendeeName"])
-            print("DOB:", row["attendeeDOB"])
-            print("Session:", row["sessionTitle"])
-            print("Speaker:", row["speakerName"])
-            print("Room:", row["roomName"])
+            print(
+                row["attendeeName"], "|",
+                row["attendeeDOB"], "|",
+                row["sessionTitle"], "|",
+                row["speakerName"], "|",
+                row["sessionDate"], "|",
+                row["roomName"]
+            )
 
     except Exception as e:
         print("Error:", e)
