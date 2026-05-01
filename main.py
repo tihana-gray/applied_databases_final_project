@@ -100,12 +100,43 @@ def add_attendee(conn):
     name = input("Enter Attendee Name: ")
     dob = input("Enter Date of Birth (YYYY-MM-DD): ")
     gender = input("Enter Gender (Male/Female): ")
+    
+    if gender.lower() != "male" and gender.lower() != "female":
+        print("*** ERROR *** Gender must be Male/Female")
+        return
+    
+    company_id = input("Enter Company ID: ")
+
+    check_company = "SELECT * FROM company WHERE companyID = %s"
+    cursor.execute(check_company, (company_id,))
+    company_result = cursor.fetchone()
+
+    if not company_result:
+        print(f"*** ERROR *** Company ID: {company_id} does not exist")
+        return
+    
+    insert_query = """
+INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+VALUES (%s, %s, %s, %s, %s)
+"""
+
+    try:
+        cursor.execute(insert_query, (attendee_id, name, dob, gender, company_id))
+        conn.commit()
+        print("Attendee successfully added")
+
+    except Exception as e:
+        print(e)
 
 # 📚 References:
 # https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
 # https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
 # https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
-
+# https://stackoverflow.com/questions/70787236/inserting-a-sql-query-from-python
+# https://www.w3schools.com/PYTHON/python_mysql_insert.asp
+# https://www.geeksforgeeks.org/python/python-mysql-insert-into-table/
+# https://www.geeksforgeeks.org/sql/sql-not-equal-operator/
+# https://www.w3schools.com/python/gloss_python_comparison_operators.asp
 
 try:
     conn = pymysql.connect(
