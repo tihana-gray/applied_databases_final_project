@@ -88,8 +88,13 @@ def add_attendee(conn):
 
     cursor = conn.cursor()
     
+    # Collecting inputs
     attendee_id = input("Enter Attendee ID: ")
-    
+    name = input("Enter Attendee Name: ")
+    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    gender = input("Enter Gender (Male/Female): ")
+    company_id = input("Enter Company ID: ")
+
     # Checking for duplicates
     check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
     cursor.execute(check_query, (attendee_id,))
@@ -99,15 +104,11 @@ def add_attendee(conn):
         print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
         return
     
-    name = input("Enter Attendee Name: ")
-    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
-    gender = input("Enter Gender (Male/Female): ")
-    
     if gender.lower() != "male" and gender.lower() != "female":
         print("*** ERROR *** Gender must be Male/Female")
         return
     
-    company_id = input("Enter Company ID: ")
+    
 
     check_company = "SELECT * FROM company WHERE companyID = %s"
     cursor.execute(check_company, (company_id,))
