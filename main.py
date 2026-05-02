@@ -86,6 +86,8 @@ WHERE company.companyID = %s
 # Function for option 3: Add New Attendee  
 def add_attendee(conn):
 
+    cursor = conn.cursor()
+    
     attendee_id = input("Enter Attendee ID: ")
     
     # Checking for duplicates
@@ -177,7 +179,7 @@ try:
             view_attendees_by_company(conn)
 
         elif choice == "3":
-            print("This option is not available yet")
+            add_attendee(conn)
 
         elif choice == "4":
             print("This option is not available yet")
