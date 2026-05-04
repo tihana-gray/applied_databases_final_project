@@ -133,33 +133,37 @@ def add_attendee(conn):
         errors = True
 
     # Company ID 
+    valid_company_id = True
     try:
         int(company_id)
     except:
         print("*** ERROR *** Invalid Company ID")
         errors = True
-        
-    if errors:
-        return
-
+        valid_company_id = False
 
     try:
-        # Duplicate check
-        check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
-        cursor.execute(check_query, (attendee_id,))
-        result = cursor.fetchone()
+        # Duplicate check (only if ID is valid integer)
+        if not errors:
+            check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+            cursor.execute(check_query, (attendee_id,))
+            result = cursor.fetchone()
 
         if result:
             print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
-            return
+            errors = True
 
-        # Company exists check
-        check_company = "SELECT * FROM company WHERE companyID = %s"
-        cursor.execute(check_company, (company_id,))
-        company_result = cursor.fetchone()
+        # Company exists check (only if integer was valid)
+        if valid_company_id:
+            check_company = "SELECT * FROM company WHERE companyID = %s"
+            cursor.execute(check_company, (company_id,))
+            company_result = cursor.fetchone()
 
         if not company_result:
             print(f"*** ERROR *** Company ID: {company_id} does not exist")
+            errors = True
+            
+        # STOP before insert if any errors
+        if errors:
             return
 
         # Insert
