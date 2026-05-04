@@ -82,54 +82,98 @@ WHERE company.companyID = %s
     except Exception as e:
         print("Error:", e)
 
-
-# Function for option 3: Add New Attendee  
+# Function for option 3: Add New Attendee
 def add_attendee(conn):
 
     cursor = conn.cursor()
-    
+
     # Collecting inputs
     attendee_id = input("Enter Attendee ID: ")
     name = input("Enter Attendee Name: ")
     dob = input("Enter Date of Birth (YYYY-MM-DD): ")
     gender = input("Enter Gender (Male/Female): ")
     company_id = input("Enter Company ID: ")
+    
+    errors = False
 
-    # Checking for duplicates
-    check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
-    cursor.execute(check_query, (attendee_id,))
-    result = cursor.fetchone()
-    
-    if result:
-        print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
-        return
-    
+    # Attendee ID 
+    try:
+        int(attendee_id)
+    except:
+        print("*** ERROR *** Invalid Attendee ID")
+        errors = True
+
+    # Name must not be empty
+    if name == "":
+        print("*** ERROR *** Invalid Name")
+        errors = True
+
+    # DOB must be YYYY-MM-DD
+    try:
+        parts = dob.split("-")
+        year = int(parts[0])
+        month = int(parts[1])
+        day = int(parts[2])
+
+        if month < 1 or month > 12:
+            print("*** ERROR *** Invalid Date Format")
+            errors = True
+
+        if day < 1 or day > 31:
+            print("*** ERROR *** Invalid Date Format")
+            errors = True
+
+    except:
+        print("*** ERROR *** Invalid Date Format")
+        errors = True
+
+    # Gender check
     if gender.lower() != "male" and gender.lower() != "female":
         print("*** ERROR *** Gender must be Male/Female")
-        return
-    
-    
+        errors = True
 
-    check_company = "SELECT * FROM company WHERE companyID = %s"
-    cursor.execute(check_company, (company_id,))
-    company_result = cursor.fetchone()
-
-    if not company_result:
-        print(f"*** ERROR *** Company ID: {company_id} does not exist")
+    # Company ID 
+    try:
+        int(company_id)
+    except:
+        print("*** ERROR *** Invalid Company ID")
+        errors = True
+        
+    if errors:
         return
-    
-    insert_query = """
-INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
-VALUES (%s, %s, %s, %s, %s)
-"""
+
 
     try:
+        # Duplicate check
+        check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+        cursor.execute(check_query, (attendee_id,))
+        result = cursor.fetchone()
+
+        if result:
+            print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
+            return
+
+        # Company exists check
+        check_company = "SELECT * FROM company WHERE companyID = %s"
+        cursor.execute(check_company, (company_id,))
+        company_result = cursor.fetchone()
+
+        if not company_result:
+            print(f"*** ERROR *** Company ID: {company_id} does not exist")
+            return
+
+        # Insert
+        insert_query = """
+        INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+
         cursor.execute(insert_query, (attendee_id, name, dob, gender, company_id))
         conn.commit()
         print("Attendee successfully added")
 
     except Exception as e:
-        print(e)
+        print(f"*** ERROR *** {e}")
 
 # 📚 References:
 # https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
