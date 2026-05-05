@@ -96,7 +96,7 @@ def add_attendee(conn):
     
     errors = False
 
-    # Attendee ID 
+    # Attendee ID must be integer
     try:
         int(attendee_id)
     except:
@@ -132,7 +132,7 @@ def add_attendee(conn):
         print("*** ERROR *** Gender must be Male/Female")
         errors = True
 
-    # Company ID 
+    # Company ID must be integer
     valid_company_id = True
     try:
         int(company_id)
@@ -140,45 +140,46 @@ def add_attendee(conn):
         print("*** ERROR *** Invalid Company ID")
         errors = True
         valid_company_id = False
+        
+    # Defining variables
+    result = None
+    company_result = None    
 
     try:
         # Duplicate check (only if ID is valid integer)
         if not errors:
-            check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
-            cursor.execute(check_query, (attendee_id,))
+            cursor.execute("SELECT * FROM attendee WHERE attendeeID = %s", (attendee_id,))
             result = cursor.fetchone()
 
-        if result:
-            print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
-            errors = True
+            if result:
+                print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
+                errors = True
 
-        # Company exists check (only if integer was valid)
+        # Company exists check
         if valid_company_id:
-            check_company = "SELECT * FROM company WHERE companyID = %s"
-            cursor.execute(check_company, (company_id,))
+            cursor.execute("SELECT * FROM company WHERE companyID = %s", (company_id,))
             company_result = cursor.fetchone()
 
-        if not company_result:
-            print(f"*** ERROR *** Company ID: {company_id} does not exist")
-            errors = True
-            
-        # STOP before insert if any errors
+            if not company_result:
+                print(f"*** ERROR *** Company ID: {company_id} does not exist")
+                errors = True
+
+        # Checking
         if errors:
             return
 
-        # Insert
-        insert_query = """
+        # Insert only if clean 
+        cursor.execute("""
         INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
         VALUES (%s, %s, %s, %s, %s)
-        """
+        """, (attendee_id, name, dob, gender, company_id))
 
-        cursor.execute(insert_query, (attendee_id, name, dob, gender, company_id))
         conn.commit()
         print("Attendee successfully added")
 
     except Exception as e:
         print(f"*** ERROR *** {e}")
-
+        
 # 📚 References:
 # https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
 # https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
