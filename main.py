@@ -82,6 +82,17 @@ WHERE company.companyID = %s
     except Exception as e:
         print("Error:", e)
 
+# 📚 References:
+# https://pymysql.readthedocs.io/en/latest/modules/cursors.html
+# https://www.w3schools.com/python/python_while_loops.asp
+# https://www.w3schools.com/python/ref_func_input.asp
+# https://www.w3schools.com/python/python_try_except.asp
+# https://www.w3schools.com/python/ref_func_int.asp
+# https://www.geeksforgeeks.org/sql/sql-join-set-1-inner-left-right-and-full-joins/
+# https://https://www.geeksforgeeks.org/dbms/querying-data-from-a-database-using-fetchone-and-fetchall/
+# https://www.w3schools.com/python/python_for_loops.asp
+
+
 # Function for option 3: Add New Attendee
 def add_attendee(conn):
 
@@ -197,6 +208,36 @@ def add_attendee(conn):
 # https://oneuptime.com/blog/post/2026-03-31-mysql-what-is-stricttranstables-mode-in-mysql/view
 # https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode
 
+
+# Function for option 4: View Connected Attendees
+def view_connected_attendees(conn):
+
+    while True:
+        attendee_id = input("Enter Attendee ID: ")
+
+        try:
+            attendee_id = int(attendee_id)
+
+            if attendee_id > 0:
+                break
+            else:
+                print("Invalid input. Please enter a number greater than 0.")
+
+        except:
+            print("Invalid input. Please enter a valid number.")
+            
+# 📚 References:
+# https://stackoverflow.com/questions/40959426/while-true-with-sqlite3
+# https://docs.python.org/pl/3.6/library/sqlite3.html
+# https://www.w3schools.com/python/ref_func_input.asp
+# https://www.w3schools.com/python/python_while_loops.asp
+# https://www.w3schools.com/python/python_try_except.asp
+# https://www.geeksforgeeks.org/python/python-exception-handling/
+# https://www.w3schools.com/python/ref_func_int.asp
+# https://www.w3schools.com/python/ref_keyword_break.asp
+
+
+# Connection
 try:
     conn = pymysql.connect(
         host="localhost",
