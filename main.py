@@ -86,6 +86,8 @@ WHERE company.companyID = %s
 def add_attendee(conn):
 
     cursor = conn.cursor()
+    cursor.execute("SET SESSION sql_mode = 'STRICT_TRANS_TABLES'")
+    # 
 
     # Collecting inputs
     attendee_id = input("Enter Attendee ID: ")
@@ -96,7 +98,7 @@ def add_attendee(conn):
     
     errors = False
 
-    # Attendee ID must be integer
+    # Attendee ID 
     try:
         int(attendee_id)
     except:
@@ -132,7 +134,7 @@ def add_attendee(conn):
         print("*** ERROR *** Gender must be Male/Female")
         errors = True
 
-    # Company ID must be integer
+    # Company ID 
     valid_company_id = True
     try:
         int(company_id)
@@ -141,39 +143,41 @@ def add_attendee(conn):
         errors = True
         valid_company_id = False
         
-    # Defining variables
     result = None
     company_result = None    
 
     try:
         # Duplicate check (only if ID is valid integer)
         if not errors:
-            cursor.execute("SELECT * FROM attendee WHERE attendeeID = %s", (attendee_id,))
+            check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+            cursor.execute(check_query, (attendee_id,))
             result = cursor.fetchone()
 
-            if result:
-                print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
-                errors = True
+        if result:
+            print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
+            errors = True
 
-        # Company exists check
+        # Company exists check (only if integer was valid)
         if valid_company_id:
-            cursor.execute("SELECT * FROM company WHERE companyID = %s", (company_id,))
+            check_company = "SELECT * FROM company WHERE companyID = %s"
+            cursor.execute(check_company, (company_id,))
             company_result = cursor.fetchone()
 
-            if not company_result:
-                print(f"*** ERROR *** Company ID: {company_id} does not exist")
-                errors = True
-
-        # Checking
-        if errors:
+        if not company_result:
+            print(f"*** ERROR *** Company ID: {company_id} does not exist")
+            errors = True
+            
+        # STOP before insert if any errors
+        if errors and valid_company_id:
             return
 
-        # Insert only if clean 
-        cursor.execute("""
+        # Insert
+        insert_query = """
         INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
         VALUES (%s, %s, %s, %s, %s)
-        """, (attendee_id, name, dob, gender, company_id))
+        """
 
+        cursor.execute(insert_query, (attendee_id, name, dob, gender, company_id))
         conn.commit()
         print("Attendee successfully added")
 
@@ -189,6 +193,9 @@ def add_attendee(conn):
 # https://www.geeksforgeeks.org/python/python-mysql-insert-into-table/
 # https://www.geeksforgeeks.org/sql/sql-not-equal-operator/
 # https://www.w3schools.com/python/gloss_python_comparison_operators.asp
+# https://forums.mysql.com/read.php?20,56252,56252
+# https://oneuptime.com/blog/post/2026-03-31-mysql-what-is-stricttranstables-mode-in-mysql/view
+# https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode
 
 try:
     conn = pymysql.connect(
