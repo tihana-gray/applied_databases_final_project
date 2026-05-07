@@ -226,6 +226,17 @@ def view_connected_attendees(conn):
         except:
             print("Invalid input. Please enter a valid number.")
             
+            
+    cursor = conn.cursor()        
+
+    check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+    cursor.execute(check_query, (attendee_id,))
+    result = cursor.fetchone()
+
+    if not result:
+        print(f"*** ERROR *** Attendee ID: {attendee_id} does not exist")
+        return       
+            
 # 📚 References:
 # https://stackoverflow.com/questions/40959426/while-true-with-sqlite3
 # https://docs.python.org/pl/3.6/library/sqlite3.html
