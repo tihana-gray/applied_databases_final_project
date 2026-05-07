@@ -235,7 +235,17 @@ def view_connected_attendees(conn):
 
     if not result:
         print(f"*** ERROR *** Attendee ID: {attendee_id} does not exist")
-        return       
+        return 
+    
+    query = """
+SELECT a.attendeeID, a.attendeeName
+FROM attendeeConnection ac
+JOIN attendee a ON ac.connectedAttendeeID = a.attendeeID
+WHERE ac.attendeeID = %s
+"""
+
+    cursor.execute(query, (attendee_id,))
+    results = cursor.fetchall()          
             
 # 📚 References:
 # https://stackoverflow.com/questions/40959426/while-true-with-sqlite3
