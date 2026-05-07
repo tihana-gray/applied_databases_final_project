@@ -232,10 +232,12 @@ def view_connected_attendees(conn):
     check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
     cursor.execute(check_query, (attendee_id,))
     result = cursor.fetchone()
-
+    
     if not result:
-        print(f"*** ERROR *** Attendee ID: {attendee_id} does not exist")
-        return 
+        print("*** ERROR *** Attendee does not exist")
+        return
+
+    attendee_name = result["attendeeName"]
     
     query = """
 SELECT DISTINCT a2.attendeeID, a2.attendeeName
@@ -249,13 +251,16 @@ AND a2.attendeeID != %s
     cursor.execute(query, (attendee_id, attendee_id))
     results = cursor.fetchall()   
     
-    if not results:
-        print(f"No connections found for Attendee ID: {attendee_id}")
-    else:
-        print(f"\nConnections for Attendee ID: {attendee_id}")
+    print(f"Attendee Name: {attendee_name}")
+    print("-------------------------")
     
-    for row in results:
-        print(row["attendeeID"], "|", row["attendeeName"])       
+    if not results:
+        print("No connections")
+    else:
+        print("These attendees are connected:")
+    
+        for row in results:
+            print(f"{row['attendeeID']} | {row['attendeeName']}")       
             
             
 # 📚 References:
