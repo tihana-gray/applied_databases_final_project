@@ -238,14 +238,25 @@ def view_connected_attendees(conn):
         return 
     
     query = """
-SELECT a.attendeeID, a.attendeeName
-FROM attendeeConnection ac
-JOIN attendee a ON ac.connectedAttendeeID = a.attendeeID
-WHERE ac.attendeeID = %s
+SELECT DISTINCT a2.attendeeID, a2.attendeeName
+FROM registration r1
+JOIN registration r2 ON r1.sessionID = r2.sessionID
+JOIN attendee a2 ON r2.attendeeID = a2.attendeeID
+WHERE r1.attendeeID = %s
+AND a2.attendeeID != %s
 """
 
-    cursor.execute(query, (attendee_id,))
-    results = cursor.fetchall()          
+    cursor.execute(query, (attendee_id, attendee_id))
+    results = cursor.fetchall()   
+    
+    if not results:
+        print(f"No connections found for Attendee ID: {attendee_id}")
+    else:
+        print(f"\nConnections for Attendee ID: {attendee_id}")
+    
+    for row in results:
+        print(row["attendeeID"], "|", row["attendeeName"])       
+            
             
 # 📚 References:
 # https://stackoverflow.com/questions/40959426/while-true-with-sqlite3
@@ -301,7 +312,7 @@ try:
             add_attendee(conn)
 
         elif choice == "4":
-            print("This option is not available yet")
+            view_connected_attendees(conn)
 
         elif choice == "5":
             print("This option is not available yet")
