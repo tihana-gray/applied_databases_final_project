@@ -296,6 +296,24 @@ AND a2.attendeeID != %s
                 print("*** ERROR *** Attendee IDs must be numbers")
         except:
             print("*** ERROR *** Attendee IDs must be numbers")
+            
+    # Cannot connect attendees to themselves
+    if id1 == id2:
+     print("*** ERROR *** An attendee cannot connect to him/herself")
+     return
+ 
+    # Checking that both attendees exist 
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM attendee WHERE attendeeID = %s", (id1,))
+    a1 = cursor.fetchone()
+
+    cursor.execute("SELECT * FROM attendee WHERE attendeeID = %s", (id2,))
+    a2 = cursor.fetchone()
+
+    if not a1 or not a2:
+        print("*** ERROR *** One or both attendee IDs do not exist")
+        return        
 
 # 📚 References:
 # https://www.w3schools.com/python/ref_func_input.asp
@@ -350,7 +368,7 @@ try:
             view_connected_attendees(conn)
 
         elif choice == "5":
-            print("This option is not available yet")
+            add_attendee_connection(conn, neo4jDriver)
 
         elif choice == "6":
             print("This option is not available yet")
