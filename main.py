@@ -1,4 +1,9 @@
 import pymysql
+from neo4j import GraphDatabase
+
+uri = "neo4j://localhost:7687"
+neo4jDriver = GraphDatabase.driver(uri, auth=("neo4j", "appDB1234"))
+
 
 # Function for option 1: View Speakers & Sessions
 def view_speakers(conn):
@@ -272,6 +277,31 @@ AND a2.attendeeID != %s
 # https://www.geeksforgeeks.org/python/python-exception-handling/
 # https://www.w3schools.com/python/ref_func_int.asp
 # https://www.w3schools.com/python/ref_keyword_break.asp
+
+
+# Function for option 5: Add Attendee Connection
+
+    # Input
+    while True:
+        id1 = input("Enter Attendee 1 ID: ")
+        id2 = input("Enter Attendee 2 ID: ")
+
+        try:
+            id1 = int(id1)
+            id2 = int(id2)
+
+            if id1 > 0 and id2 > 0:
+                break
+            else:
+                print("*** ERROR *** Attendee IDs must be numbers")
+        except:
+            print("*** ERROR *** Attendee IDs must be numbers")
+
+# 📚 References:
+# https://www.w3schools.com/python/ref_func_input.asp
+# https://www.geeksforgeeks.org/python/python-exception-handling/
+# https://www.w3schools.com/python/ref_func_int.asp
+# https://www.w3schools.com/python/python_while_loops.asp
 
 
 # Connection
