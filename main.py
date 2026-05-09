@@ -324,7 +324,17 @@ def add_attendee_connection(conn, neo4jDriver):
     if exists:
         print("*** ERROR *** These attendees are already connected")
         return
-          
+
+    # Connection
+    try:
+        with neo4jDriver.session() as session:
+            session.write_transaction(create_connection, id1, id2)
+
+        print(f"Attendee {id1} is now connected to Attendee {id2}")
+
+    except Exception as e:
+        print("*** ERROR ***", e)
+    
 
 # 📚 References:
 # https://www.w3schools.com/python/ref_func_input.asp
