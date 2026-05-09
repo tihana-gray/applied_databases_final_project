@@ -280,7 +280,8 @@ AND a2.attendeeID != %s
 
 
 # Function for option 5: Add Attendee Connection
-
+def add_attendee_connection(conn, neo4jDriver):
+    
     # Input
     while True:
         id1 = input("Enter Attendee 1 ID: ")
@@ -313,7 +314,17 @@ AND a2.attendeeID != %s
 
     if not a1 or not a2:
         print("*** ERROR *** One or both attendee IDs do not exist")
-        return        
+        return  
+    
+    
+    # Checking if already connected
+    with neo4jDriver.session() as session:
+        exists = session.read_transaction(check_connection, id1, id2)
+
+    if exists:
+        print("*** ERROR *** These attendees are already connected")
+        return
+          
 
 # 📚 References:
 # https://www.w3schools.com/python/ref_func_input.asp
