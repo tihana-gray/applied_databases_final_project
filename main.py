@@ -293,9 +293,10 @@ def check_connection(tx, id1, id2):
 
 def create_connection(tx, id1, id2):
     query = """
-    MATCH (a:Attendee {AttendeeID: $id1}), (b:Attendee {AttendeeID: $id2})
-    CREATE (a)-[:CONNECTED_TO]->(b),
-           (b)-[:CONNECTED_TO]->(a)
+    MERGE (a:Attendee {AttendeeID: $id1})
+    MERGE (b:Attendee {AttendeeID: $id2})
+    MERGE (a)-[:CONNECTED_TO]->(b)
+    MERGE (b)-[:CONNECTED_TO]->(a)
     """
     tx.run(query, id1=id1, id2=id2)
 
@@ -370,6 +371,9 @@ def add_attendee_connection(conn, neo4jDriver):
 # https://github.com/FreeOpcUa/opcua-asyncio/issues/1660
 # https://stackoverflow.com/questions/74061743/neo4j-aura-demo-python-attributeerror-session-object-has-no-attribute-execut
 # https://www.psycopg.org/psycopg3/docs/advanced/pool.html
+# https://www.dbvis.com/thetable/how-to-use-merge-in-sql-query-statements-complete-guide/#:~:text=In%20most%20cases%2C%20you%20want,based%20on%20a%20specified%20condition.
+# https://www.sqlshack.com/understanding-the-sql-merge-statement/
+# https://mimo.org/glossary/sql/merge-statement
 
 
 # Connection
