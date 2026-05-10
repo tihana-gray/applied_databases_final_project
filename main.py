@@ -376,6 +376,31 @@ def add_attendee_connection(conn, neo4jDriver):
 # https://mimo.org/glossary/sql/merge-statement
 
 
+# Function for option 6: View Rooms
+def view_rooms(conn):
+
+    global rooms, rooms_loaded
+
+    # Loading rooms
+    if not rooms_loaded:
+        cursor = conn.cursor()
+
+        query = """
+        SELECT roomID, roomName, capacity
+        FROM room
+        """
+
+        cursor.execute(query)
+        rooms = cursor.fetchall()
+
+        rooms_loaded = True
+
+# 📚 References:
+# https://www.w3schools.com/python/python_variables_global.asp
+# https://www.geeksforgeeks.org/python/global-keyword-in-python/
+# https://stackoverflow.com/questions/74834142/python-syntax-for-creating-and-changing-global-variables
+
+
 # Connection
 try:
     conn = pymysql.connect(
@@ -389,10 +414,16 @@ try:
 
     print("Connected successfully!")
 
+    rooms = []
+    rooms_loaded = False
+
     # 📚 References: 
     # https://stackoverflow.com/questions/32754461/how-to-install-mysql-connector-via-pip
     # https://www.w3schools.com/python/python_mysql_getstarted.asp
     # https://www.geeksforgeeks.org/python/how-to-install-mysql-connector-package-in-python/
+    # https://www.w3schools.com/python/python_lists.asp
+    # https://www.geeksforgeeks.org/python/python-lists/
+    # https://www.w3schools.com/python/python_booleans.asp
 
     while True:
         print("\nConference Management")
