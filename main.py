@@ -280,6 +280,26 @@ AND a2.attendeeID != %s
 
 
 # Function for option 5: Add Attendee Connection
+
+# Connection check & create
+def check_connection(tx, id1, id2):
+
+    query = """
+    MATCH (a:Attendee {AttendeeID: $id1})-[:CONNECTED_TO]-(b:Attendee {AttendeeID: $id2})
+    RETURN a
+    """
+    result = tx.run(query, id1=id1, id2=id2)
+    return result.single()
+
+def create_connection(tx, id1, id2):
+    query = """
+    MATCH (a:Attendee {AttendeeID: $id1}), (b:Attendee {AttendeeID: $id2})
+    CREATE (a)-[:CONNECTED_TO]->(b),
+           (b)-[:CONNECTED_TO]->(a)
+    """
+    tx.run(query, id1=id1, id2=id2)
+
+# Adding connection
 def add_attendee_connection(conn, neo4jDriver):
     
     # Input
@@ -297,11 +317,12 @@ def add_attendee_connection(conn, neo4jDriver):
                 print("*** ERROR *** Attendee IDs must be numbers")
         except:
             print("*** ERROR *** Attendee IDs must be numbers")
+  
             
     # Cannot connect attendees to themselves
-    if id1 == id2:
-     print("*** ERROR *** An attendee cannot connect to him/herself")
-     return
+    if id1 == id2:    
+        print("*** ERROR *** An attendee cannot connect to him/herself")
+        return
  
     # Checking that both attendees exist 
     cursor = conn.cursor()
@@ -318,8 +339,8 @@ def add_attendee_connection(conn, neo4jDriver):
     
     
     # Checking if already connected
-    with neo4jDriver.session() as session:
-        exists = session.read_transaction(check_connection, id1, id2)
+    with neo4jDriver.session(database="appdbprojneo4j") as session:
+        exists = session.execute_read(check_connection, id1, id2)
 
     if exists:
         print("*** ERROR *** These attendees are already connected")
@@ -327,13 +348,13 @@ def add_attendee_connection(conn, neo4jDriver):
 
     # Connection
     try:
-        with neo4jDriver.session() as session:
-            session.write_transaction(create_connection, id1, id2)
+        with neo4jDriver.session(database="appdbprojneo4j") as session:
+            session.execute_write(create_connection, id1, id2)
 
         print(f"Attendee {id1} is now connected to Attendee {id2}")
 
     except Exception as e:
-        print("*** ERROR ***", e)
+        print("*** ERROR *** Failed to create connection")
     
 
 # 📚 References:
@@ -341,6 +362,14 @@ def add_attendee_connection(conn, neo4jDriver):
 # https://www.geeksforgeeks.org/python/python-exception-handling/
 # https://www.w3schools.com/python/ref_func_int.asp
 # https://www.w3schools.com/python/python_while_loops.asp
+# https://stackoverflow.com/questions/76717550/neo4j-query-works-in-neo4j-desktop-but-not-python-driver
+# https://stackoverflow.com/questions/75434485/neo4j-python-driver-attributeerror-session-object-has-no-attribute-execute
+# https://community.neo4j.com/t/difference-between-session-run-and-session-readtransaction-or-session-writetransaction/14720/3
+# https://neo4j.com/docs/driver-manual/1.7/sessions-transactions/#driver-transactions-transaction-functions
+# https://neo4j.com/docs/api/python-driver/current/api.html
+# https://github.com/FreeOpcUa/opcua-asyncio/issues/1660
+# https://stackoverflow.com/questions/74061743/neo4j-aura-demo-python-attributeerror-session-object-has-no-attribute-execut
+# https://www.psycopg.org/psycopg3/docs/advanced/pool.html
 
 
 # Connection
