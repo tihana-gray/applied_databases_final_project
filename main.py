@@ -394,11 +394,23 @@ def view_rooms(conn):
         rooms = cursor.fetchall()
 
         rooms_loaded = True
+    
+    # Displaying rooms
+    print("\nRooms")
+    print("-----")
+
+    for row in rooms:
+        print(
+            row["roomID"], "|",
+            row["roomName"], "|",
+            row["capacity"]
+        )    
 
 # 📚 References:
 # https://www.w3schools.com/python/python_variables_global.asp
 # https://www.geeksforgeeks.org/python/global-keyword-in-python/
 # https://stackoverflow.com/questions/74834142/python-syntax-for-creating-and-changing-global-variables
+# https://www.w3schools.com/python/python_for_loops.asp
 
 
 # Connection
@@ -456,7 +468,7 @@ try:
             add_attendee_connection(conn, neo4jDriver)
 
         elif choice == "6":
-            print("This option is not available yet")
+            view_rooms(conn)
 
         elif choice.lower() == "x":
             print("Exiting application...")
