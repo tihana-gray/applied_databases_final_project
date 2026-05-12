@@ -21,11 +21,20 @@ WHERE session.speakerName LIKE %s
         cursor = conn.cursor()
         cursor.execute(query, ("%" + name + "%",))
         results = cursor.fetchall()
+        
+        if not results:
+            print("No speakers found of that name")
+            return
+
+        print(f"\nSession Details For : {name}")
+        print("----------------------------------------")
 
         for row in results:
-            print("\nSpeaker:", row["speakerName"])
-            print("Session:", row["sessionTitle"])
-            print("Room:", row["roomName"])
+            print(
+                row["speakerName"], "|",
+                row["sessionTitle"], "|",
+                row["roomName"]
+            )
 
     except Exception as e:
         print("Error:", e)
@@ -54,26 +63,45 @@ def view_attendees_by_company(conn):
 
         except:
             print("Invalid input. Please enter a valid number.")
-
-    query = """
-SELECT attendee.attendeeName, attendee.attendeeDOB,
-session.sessionTitle, session.speakerName,
-session.sessionDate, room.roomName
-FROM attendee
-JOIN company ON attendee.attendeeCompanyID = company.companyID
-JOIN registration ON attendee.attendeeID = registration.attendeeID
-JOIN session ON registration.sessionID = session.sessionID
-JOIN room ON session.roomID = room.roomID
-WHERE company.companyID = %s
-"""
-
+            
     try:
         cursor = conn.cursor()
+        
+        # Checking if company exists
+        check_company = "SELECT companyName FROM company WHERE companyID = %s"
+        cursor.execute(check_company, (company_id,))
+        company = cursor.fetchone()
+
+        if not company:
+            print(f"Company with ID {company_id} doesn't exist")
+            return
+        
+
+        query = """
+        SELECT attendee.attendeeName, attendee.attendeeDOB,
+        session.sessionTitle, session.speakerName,
+        session.sessionDate, room.roomName
+        FROM attendee
+        JOIN company ON attendee.attendeeCompanyID = company.companyID
+        JOIN registration ON attendee.attendeeID = registration.attendeeID
+        JOIN session ON registration.sessionID = session.sessionID
+        JOIN room ON session.roomID = room.roomID
+        WHERE company.companyID = %s
+        """
+            
         cursor.execute(query, (company_id,))
         results = cursor.fetchall()
 
-        print("\nCompany ID:", company_id)
+        # Handling "no attendees" case 
+        if not results:
+            print(f"{company['companyName']} | Attendees")
+            print(f"No attendees found for {company['companyName']}")
+            return
         
+        
+         # Printing results
+        print(f"{company['companyName']} | Attendees")
+
         for row in results:
             print(
                 row["attendeeName"], "|",
@@ -83,7 +111,7 @@ WHERE company.companyID = %s
                 row["sessionDate"], "|",
                 row["roomName"]
             )
-
+        
     except Exception as e:
         print("Error:", e)
 
@@ -114,42 +142,16 @@ def add_attendee(conn):
     
     errors = False
 
-    # Attendee ID 
-    try:
-        int(attendee_id)
-    except:
-        print("*** ERROR *** Invalid Attendee ID")
-        errors = True
-
     # Name must not be empty
     if name == "":
         print("*** ERROR *** Invalid Name")
         errors = True
-
-    # DOB must be YYYY-MM-DD
-    try:
-        parts = dob.split("-")
-        year = int(parts[0])
-        month = int(parts[1])
-        day = int(parts[2])
-
-        if month < 1 or month > 12:
-            print("*** ERROR *** Invalid Date Format")
-            errors = True
-
-        if day < 1 or day > 31:
-            print("*** ERROR *** Invalid Date Format")
-            errors = True
-
-    except:
-        print("*** ERROR *** Invalid Date Format")
-        errors = True
-
+        
     # Gender check
     if gender.lower() != "male" and gender.lower() != "female":
         print("*** ERROR *** Gender must be Male/Female")
         errors = True
-
+        
     # Company ID 
     valid_company_id = True
     try:
@@ -163,15 +165,6 @@ def add_attendee(conn):
     company_result = None    
 
     try:
-        # Duplicate check (only if ID is valid integer)
-        if not errors:
-            check_query = "SELECT * FROM attendee WHERE attendeeID = %s"
-            cursor.execute(check_query, (attendee_id,))
-            result = cursor.fetchone()
-
-        if result:
-            print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
-            errors = True
 
         # Company exists check (only if integer was valid)
         if valid_company_id:
@@ -226,10 +219,10 @@ def view_connected_attendees(conn):
             if attendee_id > 0:
                 break
             else:
-                print("Invalid input. Please enter a number greater than 0.")
+                print("*** ERROR *** Please enter a number greater than 0.")
 
         except:
-            print("Invalid input. Please enter a valid number.")
+            print("*** ERROR *** Invalid attendee ID.")
             
             
     cursor = conn.cursor()        
