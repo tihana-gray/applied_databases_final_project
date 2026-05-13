@@ -131,12 +131,14 @@ def add_attendee(conn):
 
     cursor = conn.cursor()
     cursor.execute("SET SESSION sql_mode = 'STRICT_TRANS_TABLES'")
-    # 
+    
+    print("\nAdd New Attendee")
+    print("----------------")
 
     # Collecting inputs
     attendee_id = input("Enter Attendee ID: ")
     name = input("Enter Attendee Name: ")
-    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    dob = input("DOB (YYYY-MM-DD): ")
     gender = input("Enter Gender (Male/Female): ")
     company_id = input("Enter Company ID: ")
     
@@ -188,10 +190,38 @@ def add_attendee(conn):
 
         cursor.execute(insert_query, (attendee_id, name, dob, gender, company_id))
         conn.commit()
-        print("Attendee successfully added")
+        print("\nAttendee successfully added\n")
+        
+        # New attendee table
+        verify_query = "SELECT * FROM attendee WHERE attendeeID = %s"
+        cursor.execute(verify_query, (attendee_id,))
+        row = cursor.fetchone()
+
+        if row:
+            print("+------------+----------------+--------------+------------------+----------------------+")
+
+            print("| attendeeID | attendeeName   | attendeeDOB  | attendeeGender   | attendeeCompanyID   |")
+
+            print("+------------+----------------+--------------+------------------+----------------------+")
+
+            print("| {:>10} | {:<14} | {:<12} | {:<16} | {:>20} |".format(
+                row["attendeeID"],
+                row["attendeeName"],
+                str(row["attendeeDOB"]),
+                row["attendeeGender"],
+                row["attendeeCompanyID"]
+            ))
+
+            print("+------------+----------------+--------------+------------------+----------------------+")
+            print("1 row in set")
 
     except Exception as e:
-        print(f"*** ERROR *** {e}")
+    # Duplicate Attendee ID
+        if "1062" in str(e):
+            print(f"*** ERROR *** Attendee ID: {attendee_id} already exists")
+        else:
+            # All other errors 
+            print(f"*** ERROR *** {e}")
         
 # 📚 References:
 # https://stackoverflow.com/questions/48143659/cursor-fetchone-returns-none-even-though-a-value-exists
@@ -205,6 +235,14 @@ def add_attendee(conn):
 # https://forums.mysql.com/read.php?20,56252,56252
 # https://oneuptime.com/blog/post/2026-03-31-mysql-what-is-stricttranstables-mode-in-mysql/view
 # https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode
+# https://stackoverflow.com/questions/3228865/how-do-i-format-a-number-with-a-variable-number-of-digits-in-python
+# https://www.geeksforgeeks.org/python/python-output-formatting/
+# https://www.w3schools.com/python/ref_string_format.asp
+# https://www.geeksforgeeks.org/python/string-alignment-in-python-f-string/
+# https://www.w3schools.com/python/python_try_except.asp
+# https://www.w3schools.com/python/ref_func_str.asp
+# https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+
 
 
 # Function for option 4: View Connected Attendees
@@ -279,7 +317,7 @@ def check_connection(tx, id1, id2):
 
     query = """
     MATCH (a:Attendee {AttendeeID: $id1})-[:CONNECTED_TO]-(b:Attendee {AttendeeID: $id2})
-    RETURN a
+    RETURN DISTINCT a
     """
     result = tx.run(query, id1=id1, id2=id2)
     return result.single()

@@ -183,6 +183,10 @@ Any invalid menu option redisplays the menu.
 - MySQL STRICT_TRANS_TABLES mode is used to enforce data integrity
 
 
+Worked with class notes as a reference and online sources.
+⚠️ **Full list of online references provided with the code.**
+
+
 ### Author
 
 Tihana Gray
